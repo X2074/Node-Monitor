@@ -1,19 +1,38 @@
-require('dotenv').config();  // 加载 .env 文件中的环境变量
+require('dotenv').config();
+
+function getChainType() {
+    const args = process.argv.slice(1);
+    const chainArg = args.find(arg => arg.startsWith('--chain='));
+    if (chainArg) {
+        const chainType = chainArg.split('=')[1];
+        if (['mainnet', 'testnet'].includes(chainType)) {
+            return chainType;
+        }
+        console.warn(`Invalid chain type "${chainType}" specified. Falling back to environment or default.`);
+    }
+    return process.env.CHAIN_TYPE || 'mainnet';
+}
+
+const chainType = getChainType();
+
+const CHAINLIST_API = chainType === 'mainnet'
+    ? "https://chainlist.org/chain/813"
+    : "https://chainlist.org/chain/8131";
 
 module.exports = {
-    port: process.env.PORT,  // 默认端口号
-    cronSchedule: '*/1 * * * *',  // 每分钟执行一次任务
+    port: process.env.PORT || 3000,
+    cronSchedule: '*/1 * * * *',
     email: {
-        host: process.env.EMAIL_HOST,  // 从 .env 文件加载，如果没有则使用默认值
-        port: process.env.EMAIL_PORT,  // 从 .env 文件加载，如果没有则使用默认值
-        secure: process.env.EMAIL_PORT === '465',  // 判断端口号来设置是否使用加密
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        secure: process.env.EMAIL_PORT,
         auth: {
-            user: process.env.EMAIL_USER,  // 从 .env 文件加载，如果没有则使用默认值
-            pass: process.env.EMAIL_PASS,  // 从 .env 文件加载，如果没有则使用默认值
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
         },
-        recipients: ['liuren34@outlook.com'],  // 收件人地址
+        recipients: ['liuren34@outlook.com'],
     },
-    nodeUrl: process.env.NODE_URL,  // 从 .env 文件加载节点地址
-    chainlistApi: process.env.CHAINLIST_API,  // 从 .env 文件加载链表节点 API 地址
-    syncThreshold: parseInt(process.env.SYNC_THRESHOLD, 10) || 10,  // 从 .env 文件加载同步阈值，默认 10
+    nodeUrl: process.env.NODE_URL || 'http://127.0.0.1:18131',
+    chainlistApi: CHAINLIST_API,
+    syncThreshold: parseInt(process.env.SYNC_THRESHOLD, 10) || 10,
 };

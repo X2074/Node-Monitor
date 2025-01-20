@@ -13,30 +13,20 @@ async function getLocalNodeStatus() {
     }
 }
 
-async function getChainListNodeStatus() {
-    try {
-        const response = await axios.get(`${config.chainlistApi}/status`);
-        logger.info('Fetched chainlist node status successfully.');
-        return response.data;
-    } catch (error) {
-        logger.error(`Error fetching chainlist node status: ${error.message}`);
-        throw new Error('Failed to fetch chainlist node status');
-    }
-}
 
-async function compareNodeStatus() {
+async function compareNodeStatus(chainListNode) {
     try {
+
         const localNode = await getLocalNodeStatus();
-        const chainListNode = await getChainListNodeStatus();
 
         const isHeightSynced = Math.abs(localNode.height - chainListNode.height) <= config.syncThreshold;
+
         const isStateRootMatching = localNode.stateroot === chainListNode.stateroot;
 
         return {
             isHeightSynced,
-            isStateRootMatching,
             localNode,
-            chainListNode,
+            isStateRootMatching,
         };
     } catch (error) {
         logger.error(`Error comparing node statuses: ${error.message}`);
@@ -44,4 +34,5 @@ async function compareNodeStatus() {
     }
 }
 
-module.exports = { getLocalNodeStatus, getChainListNodeStatus, compareNodeStatus };
+
+module.exports = {compareNodeStatus};
