@@ -8,7 +8,6 @@ const cache = require('../src/utils/cacheUtils');
 logger.info('Clearing all existing tasks before scheduling new ones.');
 clearAll();
 
-
 schedule('cheerioTask', "*/1 * * * *", async () => {
     try {
         const {maxHeight, stateRoot, blockData} = await cheerioService.collectHeights();
@@ -25,20 +24,17 @@ schedule('cheerioTask', "*/1 * * * *", async () => {
     }
 });
 
-schedule('monitorTask', "*/2 * * * *", async () => {
+schedule('monitorTask', "*/1 * * * *", async () => {
     try {
         const maxHeight = cache.get('maxHeight');
         const stateRoot = cache.get('stateRoot');
         const blockData = cache.get('blockData');
-
         if (maxHeight && stateRoot && blockData) {
-            // 组合数据
             const chainListNode = {
                 maxHeight,
                 stateRoot,
                 blockData,
             };
-
             await monitorService.monitor(chainListNode);
         } else {
             logger.warn('Incomplete data in cache for monitorTask. Ensure data is being cached correctly.');

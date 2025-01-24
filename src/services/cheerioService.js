@@ -2,6 +2,7 @@ const axios = require('axios');
 const cron = require('node-cron');
 const config = require('../config');
 const cheerio = require('cheerio');
+const {getBlockByNumber} = require('./nodeApiService');
 
 async function getQitmeerRPCs() {
     try {
@@ -22,36 +23,6 @@ async function getQitmeerRPCs() {
 }
 
 
-async function getChainStateRootAndHeight(rpcUrl) {
-    try {
-        const requestData = {
-            jsonrpc: "2.0",
-            method: "eth_getBlockByNumber",
-            params: ["latest", false],
-            id: 1,
-        };
-
-        const response = await axios.post(rpcUrl, requestData, {
-            headers: {'Content-Type': 'application/json'},
-        });
-
-        const blockData = response.data.result;
-
-        if (!blockData) {
-            console.error(`No block data returned from ${rpcUrl}`);
-            return null;
-        }
-
-        return {
-            height: parseInt(blockData.number, 16),
-            stateroot: blockData.stateRoot || null,
-            blockData,
-        };
-    } catch (error) {
-        console.error(`Error fetching data from ${rpcUrl}:`, error.message);
-        return null;
-    }
-}
 
 
 async function collectHeights() {
@@ -62,13 +33,11 @@ async function collectHeights() {
 
     for (const rpcUrl of rpcUrls) {
         try {
-            const chainListNode = await getChainStateRootAndHeight(rpcUrl);
+            const chainListNode = await getBlockByNumber(rpcUrl);
 
             if (chainListNode) {
                 const {height, stateroot, blockData} = chainListNode;
                 console.log(`RPC: ${rpcUrl} - Latest Block Height: ${height}, State Root: ${stateroot}`);
-
-                // 更新最高高度及相关数据
                 if (height > maxHeight) {
                     maxHeight = height;
                     maxStateRoot = stateroot;

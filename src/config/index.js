@@ -1,11 +1,3 @@
-const defaultConfig = require('./default');
-const environment = process.env.NODE_ENV || 'development';
+const config = require('./default');
 
-let environmentConfig = {};
-try {
-    environmentConfig = require(`./${environment}`);
-} catch (error) {
-    console.warn(`No specific config for environment: ${environment}`);
-}
-
-module.exports = { ...defaultConfig, ...environmentConfig };
+module.exports = config;

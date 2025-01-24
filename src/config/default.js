@@ -16,11 +16,15 @@ function getChainType() {
 const chainType = getChainType();
 
 const CHAINLIST_API = chainType === 'mainnet'
-    ? "https://chainlist.org/chain/813"
-    : "https://chainlist.org/chain/8131";
+    ? process.env.CHAINLIST_MAINNET_URL
+    : process.env.CHAINLIST_TESTNET_URL;
 
 module.exports = {
-    port: process.env.PORT || 3000,
+    port: process.env.PORT,
+    qitmeer: {
+        username: process.env.QITMEER_USERNAME,
+        password: process.env.QITMEER_PASSWORD,
+    },
     cronSchedule: '*/1 * * * *',
     email: {
         host: process.env.EMAIL_HOST,
@@ -30,9 +34,11 @@ module.exports = {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
         },
-        recipients: ['liuren34@outlook.com'],
+        recipients: process.env.EMAIL_RECIPIENTS
+            ? process.env.EMAIL_RECIPIENTS.split(',').map(email => email.trim())
+            : [],
     },
-    nodeUrl: process.env.NODE_URL || 'http://127.0.0.1:18131',
+    NODE_URL: process.env.NODE_URL,
     chainlistApi: CHAINLIST_API,
     syncThreshold: parseInt(process.env.SYNC_THRESHOLD, 10) || 10,
 };

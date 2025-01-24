@@ -1,28 +1,17 @@
 const axios = require('axios');
 const config = require('../config');
 const logger = require('../utils/logger');
-
-async function getLocalNodeStatus() {
-    try {
-        const response = await axios.get(`${config.nodeUrl}/status`);
-        logger.info('Fetched local node status successfully.');
-        return response.data;
-    } catch (error) {
-        logger.error(`Error fetching local node status: ${error.message}`);
-        throw new Error('Failed to fetch local node status');
-    }
-}
+const { getQitmeerStateRoot } = require("./qitmeerApiService");
 
 
 async function compareNodeStatus(chainListNode) {
     try {
-
-        const localNode = await getLocalNodeStatus();
-
-        const isHeightSynced = Math.abs(localNode.height - chainListNode.height) <= config.syncThreshold;
-
-        const isStateRootMatching = localNode.stateroot === chainListNode.stateroot;
-
+        const localNode = await getQitmeerStateRoot(config.NODE_URL);
+        const isHeightSynced = Math.abs(localNode.evmHeight - chainListNode.maxHeight) <= config.syncThreshold;
+        const isStateRootMatching = true;
+        if (localNode.evmHeight == chainListNode.maxHeight) {
+            isStateRootMatching = localNode.evmStateRoot === chainListNode.stateRoot;
+        }
         return {
             isHeightSynced,
             localNode,
@@ -35,4 +24,4 @@ async function compareNodeStatus(chainListNode) {
 }
 
 
-module.exports = {compareNodeStatus};
+module.exports = { compareNodeStatus };
