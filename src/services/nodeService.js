@@ -8,8 +8,8 @@ async function compareNodeStatus(chainListNode) {
     try {
         const localNode = await getQitmeerStateRoot(config.NODE_URL);
         const isHeightSynced = Math.abs(localNode.evmHeight - chainListNode.maxHeight) <= config.syncThreshold;
-        const isStateRootMatching = true;
-        if (localNode.evmHeight == chainListNode.maxHeight) {
+        let isStateRootMatching = true;
+        if (localNode.evmHeight === chainListNode.maxHeight) {
             isStateRootMatching = localNode.evmStateRoot === chainListNode.stateRoot;
         }
         return {

@@ -1,21 +1,21 @@
-const {schedule, clearAll} = require('./utils/cronUtil');
+const { schedule, clearAll } = require('./utils/cronUtil');
 const monitorService = require('./services/monitorService');
 const cheerioService = require('./services/cheerioService');
 const logger = require('./utils/logger');
-
+const config = require('./config');
 const cache = require('../src/utils/cacheUtils');
 
 logger.info('Clearing all existing tasks before scheduling new ones.');
 clearAll();
 
-schedule('cheerioTask', "*/1 * * * *", async () => {
+schedule('cheerioTask', config.cheerioTaskCron, async () => {
     try {
-        const {maxHeight, stateRoot, blockData} = await cheerioService.collectHeights();
+        const { maxHeight, stateRoot, blockData } = await cheerioService.collectHeights();
 
         if (maxHeight !== null) {
-            cache.set('maxHeight', maxHeight, 120);
-            cache.set('stateRoot', stateRoot, 120);
-            cache.set('blockData', blockData, 120);
+            cache.set('maxHeight', maxHeight, config.cacheTTL);
+            cache.set('stateRoot', stateRoot, config.cacheTTL);
+            cache.set('blockData', blockData, config.cacheTTL);
         } else {
             logger.warn('Max height is null, skipping cache update.');
         }
@@ -24,7 +24,7 @@ schedule('cheerioTask', "*/1 * * * *", async () => {
     }
 });
 
-schedule('monitorTask', "*/1 * * * *", async () => {
+schedule('monitorTask', config.monitorTaskCron, async () => {
     try {
         const maxHeight = cache.get('maxHeight');
         const stateRoot = cache.get('stateRoot');
