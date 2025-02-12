@@ -11,13 +11,17 @@ async function monitor(chainListNode) {
             const message = `Node out of sync. Local height: ${localNode.evmHeight}, Chainlist height: ${chainListNode.maxHeight}. 
             Attempting to restart. `;
             logger.warn(message);
-            await restartNode();
+            await restartNode()
+                .then(() => console.log('Node restarted successfully.'))
+                .catch(err => console.error('Failed to restart node:', err));;;
         }
         if (!isStateRootMatching) {
             const message = `State root mismatch detected. Local stateroot: ${localNode.evmStateRoot}, 
             Chainlist stateroot: ${chainListNode.stateRoot} `;
             await sendEmail('State Root Mismatch Alert', message);
-            await restartNode();
+            await restartNode()
+                .then(() => console.log('Node restarted successfully.'))
+                .catch(err => console.error('Failed to restart node:', err));;
         }
         await detectBlockGenerationLag(localNode.height);
         logger.info('Node is in sync and running correctly.');
@@ -40,13 +44,15 @@ async function detectBlockGenerationLag(currentHeight) {
 
     if (lastHeights.length === 2) {
         const diff1 = lastHeights[1] - lastHeights[0];
-        if (diff1 < 15) {
+        if (diff1 >= 15) {
             const message = `Block generation lag detected. Height differences are too small.
             Differences: [${diff1}]. Heights: ${lastHeights.join(', ')}`;
             console.warn(message);
 
             await sendEmail('Block Generation Lag Alert', message);
-            await restartNode();
+            await restartNode()
+                .then(() => console.log('Node restarted successfully.'))
+                .catch(err => console.error('Failed to restart node:', err));
         }
     }
 }

@@ -25,9 +25,9 @@ module.exports = {
         username: process.env.QITMEER_USERNAME,
         password: process.env.QITMEER_PASSWORD,
     },
-    cheerioTaskCron: process.env.CHEERIO_TASK_CRON || "*/1 * * * *",  // 使用 process.env 来读取 cron 表达式
-    monitorTaskCron: process.env.MONITOR_TASK_CRON || "*/1 * * * *",  // 使用 process.env 来读取 cron 表达式
-    cacheTTL: parseInt(process.env.CACHE_TTL, 10) || 1800,  // 使用 process.env 来读取 cacheTTL
+    cheerioTaskCron: process.env.CHEERIO_TASK_CRON || "*/1 * * * *",
+    monitorTaskCron: process.env.MONITOR_TASK_CRON || "*/1 * * * *",
+    cacheTTL: parseInt(process.env.CACHE_TTL, 10) || 1800,
     email: {
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
