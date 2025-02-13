@@ -17,9 +17,6 @@ npm run start -- --chain=testnet
 ##  Introduction to Project Structure
 
 ```
-├── scripts                     # Node shell scripts
-│   ├── start.sh                # QNG start script
-│   └── stop.sh                 # QNG stop script
 ├── src                         # Source code
 │   ├── config                  # Configuration files
 │   │   ├── default.js          # Default configuration
@@ -39,7 +36,6 @@ npm run start -- --chain=testnet
 │   │   ├── logger.js           # Logger utility
 │   ├── app.js                  # Application configuration
 │   └── index.js                # Common entry point
-├── .env                        # Environment variables
 ├── .env.example                # Example of environment variables
 ├── .gitignore                  # Git ignore file configuration
 ├── package.json                # Project dependencies configuration
