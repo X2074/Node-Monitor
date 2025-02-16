@@ -11,6 +11,7 @@ async function monitor(chainListNode) {
             const message = `Node out of sync. Local height: ${localNode.evmHeight}, Chainlist height: ${chainListNode.maxHeight}. 
             Attempting to restart. `;
             logger.warn(message);
+            await sendEmail('Node out of sync Alert', message);
             await restartNode()
                 .then(() => console.log('Node restarted successfully.'))
                 .catch(err => console.error('Failed to restart node:', err));
@@ -18,6 +19,7 @@ async function monitor(chainListNode) {
         if (!isStateRootMatching) {
             const message = `State root mismatch detected. Local stateroot: ${localNode.evmStateRoot}, 
             Chainlist stateroot: ${chainListNode.stateRoot} `;
+            logger.warn(message);
             await sendEmail('State Root Mismatch Alert', message);
             await restartNode()
                 .then(() => console.log('Node restarted successfully.'))
