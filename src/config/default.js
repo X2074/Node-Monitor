@@ -40,6 +40,7 @@ module.exports = {
             ? process.env.EMAIL_RECIPIENTS.split(',').map(email => email.trim())
             : [],
     },
+    SCRIPTS_DIR:process.env.SCRIPTS_DIR,
     NODE_URL: process.env.NODE_URL,
     chainlistApi: CHAINLIST_API,
     syncThreshold: parseInt(process.env.SYNC_THRESHOLD, 10) || 10,

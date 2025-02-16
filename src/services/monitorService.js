@@ -13,7 +13,7 @@ async function monitor(chainListNode) {
             logger.warn(message);
             await restartNode()
                 .then(() => console.log('Node restarted successfully.'))
-                .catch(err => console.error('Failed to restart node:', err));;;
+                .catch(err => console.error('Failed to restart node:', err));
         }
         if (!isStateRootMatching) {
             const message = `State root mismatch detected. Local stateroot: ${localNode.evmStateRoot}, 
@@ -21,7 +21,7 @@ async function monitor(chainListNode) {
             await sendEmail('State Root Mismatch Alert', message);
             await restartNode()
                 .then(() => console.log('Node restarted successfully.'))
-                .catch(err => console.error('Failed to restart node:', err));;
+                .catch(err => console.error('Failed to restart node:', err));
         }
         await detectBlockGenerationLag(localNode.height);
         logger.info('Node is in sync and running correctly.');

@@ -1,12 +1,12 @@
 const { exec } = require('child_process');
 const logger = require('../utils/logger');
 const path = require('path');
-
-const scriptsDir = path.join(__dirname, '../scripts'); 
-
+const config = require('../config');
+// 从 .env 文件中获取脚本目录
+const scriptsDir = config.SCRIPTS_DIR;
 function executeCommand(command) {
     return new Promise((resolve, reject) => {
-        exec(command, (error, stdout, stderr) => {
+        exec(`sudo -u ubuntu ${command}`, (error, stdout, stderr) => {
             if (error) {
                 logger.error(`Command failed: ${stderr}`);
                 reject(error);
@@ -17,6 +17,7 @@ function executeCommand(command) {
         });
     });
 }
+
 
 async function restartNode() {
     try {
