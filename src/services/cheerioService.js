@@ -3,10 +3,11 @@ const cron = require('node-cron');
 const config = require('../config');
 const cheerio = require('cheerio');
 const {getBlockByNumber} = require('./nodeApiService');
+const logger = require("../utils/logger");
 
 async function getQitmeerRPCs() {
     try {
-        const {data} = await axios.get(config.chainlistApi);
+        const {data} = await axios.get(config.CHAIN_LIST_API);
 
         const $ = cheerio.load(data);
 
@@ -14,10 +15,10 @@ async function getQitmeerRPCs() {
 
         const rpcUrls = jsonData.props.pageProps.chain.rpc.map(rpc => rpc.url);
 
-        console.log('Fetched RPC URLs:', rpcUrls);
+        logger.info('Fetched RPC URLs:', rpcUrls);
         return rpcUrls;
     } catch (error) {
-        console.error('Error fetching RPCs from Chainlist:', error.message);
+        logger.error('Error fetching RPCs from Chainlist:', error.message);
         return [];
     }
 }
@@ -37,21 +38,21 @@ async function collectHeights() {
 
             if (chainListNode) {
                 const {height, stateroot, blockData} = chainListNode;
-                console.log(`RPC: ${rpcUrl} - Latest Block Height: ${height}, State Root: ${stateroot}`);
+                logger.info(`RPC: ${rpcUrl} - Latest Block Height: ${height}, State Root: ${stateroot}`);
                 if (height > maxHeight) {
                     maxHeight = height;
                     maxStateRoot = stateroot;
                     maxBlockData = blockData;
                 }
             } else {
-                console.warn(`Failed to fetch data for RPC: ${rpcUrl}`);
+                logger.info(`Failed to fetch data for RPC: ${rpcUrl}`);
             }
         } catch (error) {
-            console.error(`Error fetching data for RPC: ${rpcUrl} - ${error.message}`);
+            logger.error(`Error fetching data for RPC: ${rpcUrl} - ${error.message}`);
         }
     }
 
-    console.log(`Max Height: ${maxHeight}, State Root: ${maxStateRoot}`);
+    logger.info(`Max Height: ${maxHeight}, State Root: ${maxStateRoot}`);
     return {maxHeight, stateRoot: maxStateRoot, blockData: maxBlockData};
 }
 

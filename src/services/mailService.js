@@ -11,6 +11,8 @@ const transporter = nodemailer.createTransport({
 
 async function sendEmail(subject, text, html = null) {
     try {
+        subject = `[${config.SERVER_IP}] ${subject}`;
+
         await transporter.sendMail({
             from: config.email.auth.user,
             to: config.email.recipients.join(','),
@@ -18,10 +20,11 @@ async function sendEmail(subject, text, html = null) {
             text,
             html,
         });
+
         logger.info(`Email sent: ${subject}`);
     } catch (error) {
         logger.error(`Failed to send email: ${error.message}`);
     }
 }
 
-module.exports = { sendEmail };
+module.exports = {sendEmail};

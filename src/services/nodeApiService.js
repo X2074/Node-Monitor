@@ -1,5 +1,6 @@
 const axios = require('axios');
 const config = require('../config');
+const logger = require("../utils/logger");
 
 
 async function sendJsonRpcRequest(rpcUrl, requestData, auth = null) {
@@ -16,7 +17,7 @@ async function sendJsonRpcRequest(rpcUrl, requestData, auth = null) {
         const response = await axios.post(rpcUrl, requestData, options);
         return response.data.result;
     } catch (error) {
-        console.error(`Error fetching data from ${rpcUrl}:`, error.message);
+        logger.error(`Error fetching data from ${rpcUrl}:`, error.message);
         throw error;
     }
 }
@@ -33,7 +34,7 @@ async function getBlockByNumber(rpcUrl) {
     const blockData = await sendJsonRpcRequest(rpcUrl, requestData);
 
     if (!blockData) {
-        console.error(`No block data returned from ${rpcUrl}`);
+        logger.error(`No block data returned from ${rpcUrl}`);
         return null;
     }
 

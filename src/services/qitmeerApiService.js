@@ -1,5 +1,6 @@
 const axios = require('axios');
 const config = require('../config');
+const logger = require("../utils/logger");
 
 async function sendJsonRpcRequest(rpcUrl, requestData, auth = null) {
     try {
@@ -13,10 +14,10 @@ async function sendJsonRpcRequest(rpcUrl, requestData, auth = null) {
         }
 
         const response = await axios.post(rpcUrl, requestData, options);
-        console.log(`Received response from ${rpcUrl}:`, response.data);
+        logger.info(`Received response from ${rpcUrl}:`, response.data);
         return response.data.result;
     } catch (error) {
-        console.error(`Error fetching data from ${rpcUrl}:`, error.message);
+        logger.error(`Error fetching data from ${rpcUrl}:`, error.message);
         throw error;
     }
 }
@@ -36,9 +37,9 @@ async function getQitmeerStateRoot(rpcUrl) {
         params: [order-10, true],
         id: 1,
     };
-    console.log('Fetching state root...');
+    logger.info('Fetching state root...');
     const result = await sendJsonRpcRequest(rpcUrl, requestData, auth);
-    console.log(`State root received:`, result);
+    logger.info(`State root received:`, result);
 
     return {
         hash: result.Hash,
@@ -65,9 +66,9 @@ async function getQitmeerBlockCount(rpcUrl) {
         id: 1,
     };
 
-    console.log('Fetching block count...');
+    logger.info('Fetching block count...');
     const result = await sendJsonRpcRequest(rpcUrl, requestData, auth);
-    console.log(`Block count received: ${result}`);
+    logger.info(`Block count received: ${result}`);
     return result;
 }
 

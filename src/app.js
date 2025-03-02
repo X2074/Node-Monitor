@@ -1,6 +1,8 @@
 const express = require('express');
 const {success, error} = require('./utils/httpResponse');
 const monitorService = require('./services/monitorService');
+const {restartNode, startNode, stopNode} = require('./services/restartService');
+
 const logger = require('./utils/logger');
 const config = require('./config');
 const {clearAll} = require('./utils/cronUtil');
@@ -10,7 +12,7 @@ const PORT = config.port;
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('Qitmeer Monitor!');
+    res.send('QNG Monitor!');
 });
 
 
@@ -34,6 +36,35 @@ app.get('/status', async (req, res) => {
         error(res, 'Failed to fetch node status');
     }
 });
+app.post('/node/restart', async (req, res) => {
+    try {
+        await restartNode();
+        success(res, 'Qitmeer node restarted successfully.');
+    } catch (err) {
+        logger.error(`Error restarting node: ${err.message}`);
+        error(res, 'Failed to restart Qitmeer node');
+    }
+});
+app.post('/node/start', async (req, res) => {
+    try {
+        await startNode();
+        success(res, 'Qitmeer node start successfully.');
+    } catch (err) {
+        logger.error(`Error start node: ${err.message}`);
+        error(res, 'Failed to start Qitmeer node');
+    }
+});
+
+app.post('/node/stop', async (req, res) => {
+    try {
+        await stopNode();
+        success(res, 'Qitmeer node stop successfully.');
+    } catch (err) {
+        logger.error(`Error stop node: ${err.message}`);
+        error(res, 'Failed to stop Qitmeer node');
+    }
+});
+
 
 app.post('/monitor', async (req, res) => {
     try {
