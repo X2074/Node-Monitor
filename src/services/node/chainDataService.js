@@ -1,33 +1,9 @@
-const axios = require('axios');
-const cron = require('node-cron');
-const config = require('../config');
-const cheerio = require('cheerio');
-const {getBlockByNumber} = require('./nodeApiService');
-const logger = require("../utils/logger");
-
-async function getQitmeerRPCs() {
-    try {
-        const {data} = await axios.get(config.CHAIN_LIST_API);
-
-        const $ = cheerio.load(data);
-
-        const jsonData = JSON.parse($('#__NEXT_DATA__').html());
-
-        const rpcUrls = jsonData.props.pageProps.chain.rpc.map(rpc => rpc.url);
-
-        logger.info('Fetched RPC URLs:', rpcUrls);
-        return rpcUrls;
-    } catch (error) {
-        logger.error('Error fetching RPCs from Chainlist:', error.message);
-        return [];
-    }
-}
-
-
+const {getBlockByNumber, getRPCByChainId} = require('../../api/rpc_chain');
+const logger = require("../../utils/logger");
 
 
 async function collectHeights() {
-    const rpcUrls = await getQitmeerRPCs();
+    const rpcUrls = await getRPCByChainId();
     let maxHeight = 0;
     let maxStateRoot = null;
     let maxBlockData = null;

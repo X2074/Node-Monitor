@@ -1,34 +1,17 @@
-const config = require('../config');
-const logger = require('../utils/logger');
-const {getQitmeerStateRoot} = require("./qitmeerApiService");
+const config = require('../../config');
+const logger = require('../../utils/logger');
+const {getLocalStateRoot} = require("../../api/rpc_local");
+const HeightHistory = require('../health/blockHeightHistory');
 
-// Stores the recent N heights
-const heightHistory = [];
-const chainHeightHistory = [];
+const heightHistoryManager = new HeightHistory(config.MAX_HISTORY);
 
-/**
- * Updates the history of local and chain heights.
- */
-function updateHeightHistory(currentHeight, chainHeight) {
-    // Record local node height
-    heightHistory.push(currentHeight);
-    if (heightHistory.length > config.MAX_HISTORY) {
-        heightHistory.shift();
-    }
-
-    // Record chain height
-    chainHeightHistory.push(chainHeight);
-    if (chainHeightHistory.length > config.MAX_HISTORY) {
-        chainHeightHistory.shift();
-    }
-}
 
 /**
  * Checks if the local node height is stuck.
  */
 function checkHeightStuck(currentHeight) {
-    if (heightHistory.length >= config.STUCK_THRESHOLD) {
-        const stuck = heightHistory.every(h => h === currentHeight);
+    if (heightHistoryManager.getHeightHistory().length >= config.STUCK_THRESHOLD) {
+        const stuck = heightHistoryManager.getHeightHistory().every(h => h === currentHeight);
         if (stuck) {
             logger.warn(`⚠️ Local node height is stuck (${currentHeight}), possible node failure!`);
             return {
@@ -41,23 +24,30 @@ function checkHeightStuck(currentHeight) {
 }
 
 /**
+ * Updates the history of local and chain heights using the HeightHistory class.
+ */
+function updateHeightHistory(currentHeight, chainHeight) {
+    heightHistoryManager.updateHistory(currentHeight, chainHeight);
+}
+
+/**
  * Calculates the synchronization rate of the local node and the chain.
  */
 function calculateSyncRate() {
-    const localSyncRate = (heightHistory[heightHistory.length - 1] - heightHistory[0]) / (config.MAX_HISTORY - 1);
-    const chainSyncRate = (chainHeightHistory[chainHeightHistory.length - 1] - chainHeightHistory[0]) / (config.MAX_HISTORY - 1);
+    const {localSyncRate, chainSyncRate} = heightHistoryManager.calculateSyncRate();
     return {localSyncRate, chainSyncRate};
 }
+
 
 /**
  * Detects whether the node is undergoing resynchronization (i.e., a large jump in local height).
  */
 function checkResyncing(currentHeight) {
-    if (heightHistory.length < config.MAX_HISTORY) {
+    if (heightHistoryManager.getHeightHistory().length < config.MAX_HISTORY) {
         return null; // Not enough data to determine yet
     }
 
-    const jumpAmount = currentHeight - heightHistory[heightHistory.length - 2];
+    const jumpAmount = currentHeight - heightHistoryManager.getHeightHistory()[heightHistoryManager.getHeightHistory().length - 2];
     if (jumpAmount >= config.JUMP_THRESHOLD) {
         logger.warn(`⚠️ Local node height jumped by ${jumpAmount}, likely undergoing resynchronization!`);
         return {
@@ -96,12 +86,13 @@ function checkSyncStatus(currentHeight, chainHeight) {
     }
 }
 
+
 /**
  * Main method: Compares the local node and chain status.
  */
 async function compareNodeStatus(chainListNode) {
     try {
-        const localNode = await getQitmeerStateRoot(config.NODE_URL);
+        const localNode = await getLocalStateRoot(config.NODE_URL);
         const currentHeight = localNode.evmHeight;
         const chainHeight = chainListNode.maxHeight;
 
@@ -114,20 +105,17 @@ async function compareNodeStatus(chainListNode) {
             return {...result, localNode, isStateRootMatching: false};
         }
 
-        // Calculate sync rates
-        const {localSyncRate, chainSyncRate} = calculateSyncRate();
-
         // Detect if resyncing
         result = checkResyncing(currentHeight);
         if (result) {
             return {...result, localNode, isStateRootMatching: false};
         }
-
         // Check sync status
-        result = checkSyncStatus(currentHeight, chainHeight, localSyncRate, chainSyncRate);
+        result = checkSyncStatus(currentHeight, chainHeight);
         if (!result.isStable) {
             return {...result, localNode, isStateRootMatching: false};
         }
+
 
         // Only check StateRoot when local height matches chain height
         let isStateRootMatching = "N/A"; // Default: do not check
@@ -146,5 +134,6 @@ async function compareNodeStatus(chainListNode) {
         throw error;
     }
 }
+
 
 module.exports = {compareNodeStatus};

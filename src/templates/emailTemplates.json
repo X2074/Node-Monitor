@@ -1,0 +1,32 @@
+{
+  "nodeSyncAlert": {
+    "subject": "⚠️ Node Sync Issue Detected",
+    "text": "Dear User,\n\nWe have detected an issue with node synchronization.\n\nDetails:\nChain Height: {{chainHeight}}\nLocal Node Height: {{localHeight}}\nReason: {{reason}}\n\nPlease investigate the issue.",
+    "html": "<p>Dear User,</p><p>We have detected an issue with node synchronization.</p><p><strong>Details:</strong></p><p>Chain Height: {{chainHeight}}<br>Local Node Height: {{localHeight}}<br>Reason: {{reason}}</p><p>Please investigate the issue.</p>"
+  },
+  "nodeHeightDifferenceAlert": {
+    "subject": "⚠️ Node Height Difference Alert",
+    "text": "Dear User,\n\nThe height difference between the local node and the chain exceeded the threshold.\n\nDetails:\nLocal Node Height: {{localHeight}}\nChain Height: {{chainHeight}}\nHeight Difference: {{heightDiff}}\n\nAttempting to restart the node.\nPlease investigate the issue.",
+    "html": "<p>Dear User,</p><p>The height difference between the local node and the chain exceeded the threshold.</p><p><strong>Details:</strong></p><p>Local Node Height: {{localHeight}}<br>Chain Height: {{chainHeight}}<br>Height Difference: {{heightDiff}}</p><p>Attempting to restart the node.</p><p>Please investigate the issue.</p>"
+  },
+  "stateRootMismatchAlert": {
+    "subject": "⚠️ StateRoot Mismatch Detected",
+    "text": "Dear User,\n\nA mismatch was detected between the StateRoots.\n\nDetails:\nLocal StateRoot: {{localStateRoot}}\nChain StateRoot: {{chainStateRoot}}\n\nPlease investigate the issue.",
+    "html": "<p>Dear User,</p><p>A mismatch was detected between the StateRoots.</p><p><strong>Details:</strong></p><p>Local StateRoot: {{localStateRoot}}<br>Chain StateRoot: {{chainStateRoot}}</p><p>Please investigate the issue.</p>"
+  },
+  "blockGenerationLagAlert": {
+    "subject": "⚠️ Block Generation Lag Detected",
+    "text": "Dear User,\n\nBlock generation is lagging.\n\nDetails:\nBlock rate: {{blockRate}} blocks/min\nHeight history: {{heightHistory}}\n\nPlease investigate the issue.",
+    "html": "<p>Dear User,</p><p>Block generation is lagging.</p><p><strong>Details:</strong></p><p>Block rate: {{blockRate}} blocks/min<br>Height history: {{heightHistory}}</p><p>Please investigate the issue.</p>"
+  },
+  "blockGenerationStoppedAlert": {
+    "subject": "🚨 Block Generation Stopped Alert",
+    "text": "Dear User,\n\nNo new blocks have been detected for {{timeDiff}} minutes.\n\nHeight history:\n{{heightHistory}}\n\nPlease check the QNG node.",
+    "html": "<p>Dear User,</p><p>No new blocks have been detected for {{timeDiff}} minutes.</p><p><strong>Height history:</strong></p><p>{{heightHistory}}</p><p>Please check the QNG node.</p>"
+  },
+  "nodeRestartFailedAlert": {
+    "subject": "🚨 Node Restart Failed!",
+    "text": "Dear User,\n\nThe node restart failed after {{maxAttempts}} attempts.\n\nDetails:\nError: {{errorMessage}}\nAttempts: {{attempts}}\n\nPlease check the server and restart manually.",
+    "html": "<p>Dear User,</p><p>The node restart failed after {{maxAttempts}} attempts.</p><p><strong>Details:</strong></p><p>Error: {{errorMessage}}<br>Attempts: {{attempts}}</p><p>Please check the server and restart manually.</p>"
+  }
+}
