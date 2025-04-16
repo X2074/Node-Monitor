@@ -1,9 +1,8 @@
-const {sendEmail} = require('../mail/mailService');
+const { sendAndRecordEmail } = require('../mail/senders');
 const config = require('../../config');
 
 const lastCheckTimes = [];
 const lastHeights = [];
-
 
 async function detectBlockGenerationLag(currentHeight) {
     const now = Date.now();
@@ -19,14 +18,16 @@ async function detectBlockGenerationLag(currentHeight) {
         const heightDiff = lastHeights[1] - lastHeights[0];
         const timeDiff = (lastCheckTimes[1] - lastCheckTimes[0]) / 1000 / 60;
         const blockRate = heightDiff / timeDiff;
+
         if (blockRate < config.BLOCK_RATE_THRESHOLD) {
-            await sendEmail('blockGenerationLagAlert', {
+            await sendAndRecordEmail('blockGenerationLagAlert', {
                 blockRate: blockRate.toFixed(2),
                 heightHistory: lastHeights.join(', '),
             });
         }
+
         if (heightDiff === 0) {
-            await sendEmail('blockGenerationStoppedAlert', {
+            await sendAndRecordEmail('blockGenerationStoppedAlert', {
                 timeDiff: timeDiff.toFixed(2),
                 heightHistory: lastHeights.join(', '),
             });
@@ -34,4 +35,4 @@ async function detectBlockGenerationLag(currentHeight) {
     }
 }
 
-module.exports = {detectBlockGenerationLag};
+module.exports = { detectBlockGenerationLag };

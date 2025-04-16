@@ -63,6 +63,7 @@ module.exports = {
     STUCK_THRESHOLD: parseInt(process.env.STUCK_THRESHOLD, 10) || 3,
     HEIGHT_DIFF_THRESHOLD: parseInt(process.env.HEIGHT_DIFF_THRESHOLD, 10) || 10,
     MAX_RESTART_ATTEMPTS: parseInt(process.env.MAX_RESTART_ATTEMPTS, 10) || 2,
+    MAX_WAIT_ATTEMPTS : parseInt(process.env.MAX_WAIT_ATTEMPTS, 10) || 5,
     NODE_PROCESS_NAME: process.env.NODE_PROCESS_NAME || 'qng',
     BLOCK_RATE_THRESHOLD: parseFloat(process.env.BLOCK_RATE_THRESHOLD) || 0.8, // Default 0.8
     RESTART_THRESHOLD_MINUTES: parseInt(process.env.RESTART_THRESHOLD_MINUTES, 10) || 5, // Default 5 minutes

@@ -20,6 +20,7 @@
     "https-proxy-agent": "^7.0.6",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.10.0",
+    "sqlite3": "^5.1.7",
     "undici": "^5.26.2",
     "web-streams-polyfill": "^4.1.0",
     "whatwg-encoding": "^2.0.0",

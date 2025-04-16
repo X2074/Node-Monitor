@@ -42,4 +42,19 @@ async function getLocalBlockCount(rpcUrl) {
     return result;
 }
 
-module.exports = {getLocalStateRoot};
+async function getNodeInfo(rpcUrl) {
+    const requestData = {
+        jsonrpc: '2.0',
+        method: 'getNodeInfo',
+        params: [],
+        id: 1,
+    };
+
+    logger.info('Fetching node info...');
+    const result = await sendJsonRpcRequest(rpcUrl, requestData, getAuth());
+    logger.info(`Node info received: ${result}`);
+    return result;
+}
+
+
+module.exports = {getLocalStateRoot, getNodeInfo};

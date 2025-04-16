@@ -2,7 +2,7 @@ const {exec} = require('child_process');
 const logger = require('./logger');
 const path = require('path');
 const config = require('../config');
-const {sendEmail} = require('../services/mail/mailService');  // Import mail service for notifications
+const { sendAndRecordEmail } = require('../services/mail/senders'); // Updated to use sendAndRecordEmail
 
 // Get the script directory from the .env configuration
 const scriptsDir = config.SCRIPTS_DIR;
@@ -29,7 +29,6 @@ function executeCommand(command) {
     });
 }
 
-
 /**
  * Restart the QNG node with a maximum number of retries.
  * The number of retries is configured via `config.MAX_RESTART_ATTEMPTS`.
@@ -51,7 +50,7 @@ async function restartNode() {
 
             if (attempts >= maxAttempts) {
                 logger.error('❌ Maximum restart attempts reached. Restart failed.');
-                await sendEmail('nodeRestartFailedAlert', {
+                await sendAndRecordEmail('nodeRestartFailedAlert', {
                     maxAttempts,
                     attempts,
                     errorMessage: error.message,
@@ -60,6 +59,22 @@ async function restartNode() {
             }
             logger.info('Retrying restart...');
         }
+    }
+}
+
+/**
+ * Check if the log file contains "Shutdown complete".
+ * Currently unused, reserved for future use.
+ * @returns {Promise<boolean>}
+ */
+async function isShutdownComplete() {
+    try {
+        const logFile = path.join(scriptsDir, `${nodeProcessName}.log`);
+        const lastLogLine = await executeCommand(`tail -n 1 ${logFile}`);
+        return lastLogLine.includes('Shutdown complete');
+    } catch (err) {
+        logger.error(`Failed to read log file: ${err.message}`);
+        return false;
     }
 }
 
@@ -90,27 +105,25 @@ async function startNode() {
             logger.info(`✅ Node is already running.`);
             return;
         }
-
         await executeCommand(path.join(scriptsDir, startScript));
-
-        let isNodeStarted = false;
-        for (let i = 0; i < 30; i++) { // Check up to 30 times, every 2 seconds
+        for (let i = 0; i < config.MAX_WAIT_ATTEMPTS; i++) {
             if (await isNodeRunning()) {
-                isNodeStarted = true;
-                break;
+                logger.info('✅ Node started successfully.');
+                return;
             }
-            logger.info('⏳ Waiting for node to start...');
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            logger.info(`⏳ Waiting for node to start... (${i + 1}/${config.MAX_WAIT_ATTEMPTS})`);
+            await sleep(2000);
         }
-
-        if (!isNodeStarted) {
-            logger.error('❌ Node did not start successfully.');
-        }
-        logger.info('✅ Node started successfully.');
+        const msg = 'Node did not start successfully within the expected time.';
+        throw new Error(msg);
     } catch (error) {
         logger.error(`Failed to start node: ${error.message}`);
-        throw new Error('Node start failed');
+        throw error;
     }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
@@ -121,27 +134,22 @@ async function stopNode() {
     try {
         logger.info('Attempting to stop QNG node...');
         await executeCommand(path.join(scriptsDir, stopScript));
-
-        const logFile = path.join(scriptsDir, `${nodeProcessName}.log`); // Log file path
-        let shutdownConfirmed = false;
-
-        for (let i = 0; i < 30; i++) { // Check up to 30 times, every 2 seconds
-            const lastLogLine = await executeCommand(`tail -n 1 ${logFile}`);
-            if (lastLogLine.includes('Shutdown complete')) {
-                shutdownConfirmed = true;
-                break;
-            }
-            logger.info('Waiting for shutdown to complete...');
-            await new Promise(resolve => setTimeout(resolve, 2000));
+        let stillRunning = true;
+        for (let i = 0; i < config.MAX_WAIT_ATTEMPTS; i++) {
+            stillRunning = await isNodeRunning();
+            if (!stillRunning) break;
+            logger.info(`⏳ Waiting for node to stop... (${i + 1}/${config.MAX_WAIT_ATTEMPTS})`);
+            await sleep(2000);
         }
-        if (!shutdownConfirmed) logger.error('Shutdown not completed in time.');
-
+        if (stillRunning) {
+            logger.error('❌ Node stop timeout.');
+            throw new Error('Node did not stop within the expected time.');
+        }
         logger.info('✅ Node stopped successfully.');
     } catch (error) {
         logger.error(`Failed to stop node: ${error.message}`);
-        throw new Error('Node stop failed');
+        throw error;
     }
 }
 
-
-module.exports = {restartNode, startNode, stopNode};
+module.exports = {restartNode, startNode, stopNode, isShutdownComplete};

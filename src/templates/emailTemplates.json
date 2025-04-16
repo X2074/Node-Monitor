@@ -28,5 +28,10 @@
     "subject": "🚨 Node Restart Failed!",
     "text": "Dear User,\n\nThe node restart failed after {{maxAttempts}} attempts.\n\nDetails:\nError: {{errorMessage}}\nAttempts: {{attempts}}\n\nPlease check the server and restart manually.",
     "html": "<p>Dear User,</p><p>The node restart failed after {{maxAttempts}} attempts.</p><p><strong>Details:</strong></p><p>Error: {{errorMessage}}<br>Attempts: {{attempts}}</p><p>Please check the server and restart manually.</p>"
+  },
+  "localNodeUnreachableButShutdownConfirmed": {
+    "subject": "⚠️ Local Node Unreachable (abnormal shutdown)",
+    "text": "Unable to access local node, logs do not show normal shutdown.\n\nError: {{errorMessage}}\nContext: {{context}}\n\nPlease check the system manually.",
+    "html": "<p>Unable to access local node, logs do not show normal shutdown.</p><p><b>Error:</b> {{errorMessage}}</p><p><b>Context:</b> {{context}}</p><p>Please check the system manually.</p>"
   }
 }
