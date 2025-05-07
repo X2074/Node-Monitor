@@ -19,11 +19,11 @@ app.use('/', [secureAccess(), baseRoutes]);
 app.use('/node', [secureAccess(), nodeRoutes]);
 app.use('/tasks', [secureAccess(), taskRoutes]);
 app.use('/email', [secureAccess(), emailRoutes]);
-app.use('/api/status', statusRoutes);
-app.use('/api/alerts', alertRoutes);
-app.use('/api/connections', connectionRoutes);
-app.use('/api/monitors', monitorRoutes);
-app.use('/api/meta', metaRoutes);
+app.use('/api/status', [secureAccess(), statusRoutes]);
+app.use('/api/alerts', [secureAccess(), alertRoutes]);
+app.use('/api/connections', [secureAccess(), connectionRoutes]);
+app.use('/api/monitors', [secureAccess(), monitorRoutes]);
+app.use('/api/meta', [secureAccess(), metaRoutes]);
 
 const server = app.listen(config.port, () => {
     logger.info(`Server is running on http://localhost:${config.port}`);
