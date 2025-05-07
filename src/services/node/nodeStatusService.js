@@ -1,5 +1,5 @@
 const config = require('../../config');
-const logger = require('../../utils/logger');
+const logger = require('../../utils/core/logger');
 const {getLocalStateRoot} = require("../../api/rpc_local");
 const HeightHistory = require('../health/blockHeightHistory');
 

@@ -1,13 +1,13 @@
-const logger = require('../../utils/logger');
+const logger = require('../../utils/core/logger');
 const chainDataService = require('../node/chainDataService');
 const {compareNodeStatus} = require('../node/nodeStatusService');
-const {restartNode} = require('../../utils/restart');
+const {restartNode} = require('../../utils/system/restart');
 const {sendAndRecordEmail} = require('../mail/senders');
 const {detectBlockGenerationLag} = require('./utxoHealthService');
 const config = require("../../config");
 const {insertMonitorLog} = require('../../database/tables/monitorLogger');
 const {getNodeInfo} = require('../../api/rpc_local');
-const {insertConnectionLog} = require('../../database/tables/connectionLogLogger');
+const {insertConnectionLog} = require('../../database/tables/connectionLogger');
 const {insertNodeMeta} = require('../../database/tables/nodeMetaLogger');
 const {insertNodeStatusLog} = require('../../database/tables/nodeStatusLogger');
 
@@ -147,5 +147,4 @@ async function recordNodeMetadataIfChanged() {
     // Always record node status
     await insertNodeStatusLog(nodeInfo);
 }
-
 module.exports = {monitor};

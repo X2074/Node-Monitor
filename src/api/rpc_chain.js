@@ -1,7 +1,7 @@
-const logger = require("../utils/logger");
+const logger = require("../utils/core/logger");
 const {sendJsonRpcRequest} = require('../api/rpc_base');
 const config = require("../config");
-const {axiosGetSmart} = require('../utils/proxyAxios');
+const {axiosGetSmart} = require('../utils/core/proxyAxios');
 
 async function getBlockByNumber(rpcUrl) {
     const requestData = {

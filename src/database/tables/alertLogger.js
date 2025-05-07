@@ -1,5 +1,6 @@
 const crypto = require('crypto');
-const {mainDb, initTable, insertRecord, getRecord} = require('../../utils/dbUtils');
+const {mainDb, initTable, insertRecord, getRecord} = require('../../utils/db/dbUtils');
+const {createQueryFunction} = require('../../utils/db/queryServiceTemplate');
 const initTableSQL = `
     CREATE TABLE IF NOT EXISTS alerts
     (
@@ -12,6 +13,7 @@ const initTableSQL = `
 `;
 
 initTable(mainDb, 'alerts', initTableSQL);
+const queryAlerts = createQueryFunction('alerts', ['type', 'hash']);
 
 // Generate a unique content hash
 function getContentHash(type, payload) {
@@ -49,6 +51,7 @@ async function shouldSendAlert(type, payload) {
 
 module.exports = {
     getContentHash,
+    queryAlerts,
     insertAlert,
     shouldSendAlert,
 };

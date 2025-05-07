@@ -1,6 +1,6 @@
-const {schedule, clearAll} = require('./utils/cronUtil');
+const {schedule, clearAll} = require('./utils/system/cronUtil');
 const nodeHealthMonitorService = require('./services/health/healthMonitorService');
-const logger = require('./utils/logger');
+const logger = require('./utils/core/logger');
 const config = require('./config');
 
 logger.info('Clearing all existing tasks before scheduling new ones.');

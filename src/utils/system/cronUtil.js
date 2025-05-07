@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const logger = require('./logger');
+const logger = require('../core/logger');
 
 const tasks = new Map();
 

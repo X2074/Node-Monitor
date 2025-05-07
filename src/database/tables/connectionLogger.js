@@ -1,4 +1,5 @@
-const {mainDb, initTable, insertRecord} = require('../../utils/dbUtils');
+const {mainDb, initTable, insertRecord, getRecord, getAllRecords} = require('../../utils/db/dbUtils');
+const { createQueryFunction } = require('../../utils/db/queryServiceTemplate');
 const initTableSQL = `
     CREATE TABLE IF NOT EXISTS connection_log
     (
@@ -9,7 +10,7 @@ const initTableSQL = `
     )
 `;
 initTable(mainDb, 'connection_log', initTableSQL);
-
+const queryConnectionLogs = createQueryFunction('connection_log', ['node_id', 'connections']);
 function insertConnectionLog(nodeInfo) {
     const sql = `INSERT INTO connection_log (node_id, connections)
                  VALUES (?, ?)`;
@@ -20,5 +21,4 @@ function insertConnectionLog(nodeInfo) {
     return insertRecord(mainDb, 'connection_log', sql, params);
 }
 
-
-module.exports = {insertConnectionLog};
+module.exports = {insertConnectionLog, queryConnectionLogs };

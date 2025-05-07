@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
-const logger = require('./logger');
+const logger = require('../core/logger');
 
 const dbCache = {}; // Used to cache all database connections (singleton)
 
@@ -104,12 +104,30 @@ function getRecord(db, querySQL, params) {
         });
     });
 }
-
+/**
+ * Query multiple records
+ * @param {Database} db
+ * @param {string} querySQL
+ * @param {Array} params
+ * @returns {Promise<Array>}
+ */
+function getAllRecords(db, querySQL, params) {
+    return new Promise((resolve, reject) => {
+        db.all(querySQL, params, (err, rows) => {
+            if (err) {
+                logger.error('❌ Failed to get records:', err);
+                return reject(err);
+            }
+            resolve(rows);  // Return all matching rows
+        });
+    });
+}
 // ✅ Export utility functions + default main database
 module.exports = {
     mainDb,
     createDatabaseConnection,
     initTable,
+    getAllRecords,
     insertRecord,
     getRecord,
 };

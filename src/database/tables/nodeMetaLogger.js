@@ -1,4 +1,6 @@
-const {mainDb, initTable, insertRecord} = require('../../utils/dbUtils');
+const {mainDb, initTable, insertRecord, getRecord} = require('../../utils/db/dbUtils');
+const {createQueryFunction} = require('../../utils/db/queryServiceTemplate');
+
 const initTableSQL = `
     CREATE TABLE IF NOT EXISTS node_meta_log
     (
@@ -28,6 +30,29 @@ function insertNodeMeta(info) {
     return insertRecord(mainDb, 'node_meta_log', sql, params);
 }
 
+async function getNodeMeta() {
+    const sql = `SELECT *
+                 FROM node_meta_log
+                 ORDER BY created_at DESC
+                 LIMIT 1`;
+    try {
+        const result = await getRecord(mainDb, sql, []);
+        if (!result) {
+            return null;
+        }
+        return result;
+    } catch (err) {
+        console.error('Error fetching node meta from DB:', err);
+        throw new Error('Failed to fetch node meta from database.');
+    }
+}
+
+
+const queryNodeMeta = createQueryFunction('node_meta_log', ['node_id', 'version', 'network']);
+
+
 module.exports = {
-    insertNodeMeta
+    getNodeMeta,
+    insertNodeMeta,
+    queryNodeMeta
 };

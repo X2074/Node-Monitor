@@ -1,6 +1,6 @@
 const {sendEmail} = require('./mailService');
-const {insertAlert, getContentHash, shouldSendAlert} = require('../../database/tables/alertRecorder');
-const logger = require('../../utils/logger');
+const {insertAlert, getContentHash, shouldSendAlert} = require('../../database/tables/alertLogger');
+const logger = require('../../utils/core/logger');
 
 /**
  * Send email and insert alert record if not duplicate.

@@ -1,5 +1,5 @@
 const {getBlockByNumber, getRPCByChainId} = require('../../api/rpc_chain');
-const logger = require("../../utils/logger");
+const logger = require("../../utils/core/logger");
 
 
 async function collectHeights() {

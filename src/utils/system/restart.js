@@ -1,8 +1,8 @@
 const {exec} = require('child_process');
-const logger = require('./logger');
+const logger = require('../core/logger');
 const path = require('path');
-const config = require('../config');
-const { sendAndRecordEmail } = require('../services/mail/senders'); // Updated to use sendAndRecordEmail
+const config = require('../../config');
+const { sendAndRecordEmail } = require('../../services/mail/senders'); // Updated to use sendAndRecordEmail
 
 // Get the script directory from the .env configuration
 const scriptsDir = config.SCRIPTS_DIR;

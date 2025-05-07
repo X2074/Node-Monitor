@@ -1,5 +1,5 @@
 const {sendJsonRpcRequest, getAuth} = require('../api/rpc_base');
-const logger = require("../utils/logger");
+const logger = require("../utils/core/logger");
 
 async function getLocalStateRoot(rpcUrl) {
 

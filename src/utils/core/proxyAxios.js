@@ -1,6 +1,6 @@
 const axios = require("axios");
 const {HttpsProxyAgent} = require("https-proxy-agent");
-const config = require("../config");
+const config = require("../../config");
 
 let httpsAgent = null;
 if (config.CHAIN_DATA.NETWORK.USE_PROXY) {

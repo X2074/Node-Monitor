@@ -1,6 +1,6 @@
 const axios = require('axios');
 const config = require('../config');
-const logger = require("../utils/logger");
+const logger = require("../utils/core/logger");
 
 /**
  * Sends an RPC request to the given URL.

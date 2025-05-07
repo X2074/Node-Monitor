@@ -1,5 +1,5 @@
-const logger = require("../utils/logger");
-const {success, error} = require("../utils/httpResponse");
+const logger = require("./logger");
+const {success, error} = require("./httpResponse");
 const handleNodeAction = async (action, successMessage, errorMessage, res) => {
     try {
         await action();

@@ -1,5 +1,5 @@
 const express = require('express');
-const {sendEmail} = require('../services/mail/mailService');
+const {sendEmail} = require('../../services/mail/mailService');
 const router = express.Router();
 
 router.post('/send-alert-email', async (req, res) => {

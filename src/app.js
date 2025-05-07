@@ -1,24 +1,29 @@
 const express = require('express');
-const nodeRoutes = require('./routes/nodeRoutes');
-const baseRoutes = require('./routes/baseRoutes');
-const taskRoutes = require('./routes/taskRoutes');
-const emailRoutes = require('./routes/emailRoutes');
-const logger = require('./utils/logger');
+const baseRoutes = require('./routes/system/baseRoutes');
+const nodeRoutes = require('./routes/system/nodeRoutes');
+const taskRoutes = require('./routes/system/taskRoutes');
+const emailRoutes = require('./routes/notify/emailRoutes');
+const statusRoutes = require('./routes/monitor/statusRoutes');
+const alertRoutes = require('./routes/monitor/alertRoutes');
+const connectionRoutes = require('./routes/monitor/connectionRoutes');
+const monitorRoutes = require('./routes/monitor/monitorRoutes');
+const metaRoutes = require('./routes/monitor/metaRoutes');
+
+const logger = require('./utils/core/logger');
 const config = require('./config');
+const {secureAccess} = require("./middleware/auth");
 const app = express();
-
-
 app.use(express.json());
-app.use((err, req, res) => {
-    logger.error(`Unhandled error: ${err.message}\n${err.stack}`);
-    res.status(500).json({success: false, message: 'Internal Server Error'});
-});
 
-app.use('/', baseRoutes);
-app.use('/node', nodeRoutes);
-app.use('/tasks', taskRoutes);
-app.use('/email', emailRoutes);
-
+app.use('/', [secureAccess(), baseRoutes]);
+app.use('/node', [secureAccess(), nodeRoutes]);
+app.use('/tasks', [secureAccess(), taskRoutes]);
+app.use('/email', [secureAccess(), emailRoutes]);
+app.use('/api/status', statusRoutes);
+app.use('/api/alerts', alertRoutes);
+app.use('/api/connections', connectionRoutes);
+app.use('/api/monitors', monitorRoutes);
+app.use('/api/meta', metaRoutes);
 
 const server = app.listen(config.port, () => {
     logger.info(`Server is running on http://localhost:${config.port}`);

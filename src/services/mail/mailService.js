@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const config = require('../../config');
-const logger = require('../../utils/logger');
+const logger = require('../../utils/core/logger');
 const fs = require('fs');
 const path = require('path');
 const emailTemplates = JSON.parse(fs.readFileSync(path.join(__dirname, '../../templates', 'emailTemplates.json'), 'utf-8'));

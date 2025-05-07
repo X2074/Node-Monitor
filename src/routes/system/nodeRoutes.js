@@ -1,6 +1,6 @@
 const express = require('express');
-const {restartNode, startNode, stopNode} = require('../utils/restart');
-const {handleNodeAction} = require('../utils/action');
+const {restartNode, startNode, stopNode} = require('../../utils/system/restart');
+const {handleNodeAction} = require('../../utils/core/action');
 
 const router = express.Router();
 
