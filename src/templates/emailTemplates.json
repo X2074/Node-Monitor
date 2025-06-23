@@ -33,5 +33,10 @@
     "subject": "⚠️ Local Node Unreachable (abnormal shutdown)",
     "text": "Unable to access local node, logs do not show normal shutdown.\n\nError: {{errorMessage}}\nContext: {{context}}\n\nPlease check the system manually.",
     "html": "<p>Unable to access local node, logs do not show normal shutdown.</p><p><b>Error:</b> {{errorMessage}}</p><p><b>Context:</b> {{context}}</p><p>Please check the system manually.</p>"
+  },
+  "weeklyReport": {
+    "subject": "[Node Monitoring System] Weekly Report - {{date}}",
+    "text": "[Node Monitoring System] Weekly Operational Report\n\n📅 Period: Last 7 Days\n\n📌 Alert Summary:\n{{alerts}}\n\n📌 Node Connection Stats:\n{{connections}}\n\n📌 Block Height Stats:\nMin Height: {{minHeight}}\nMax Height: {{maxHeight}}\nBlock Growth: {{growth}}\n\n📬 This is an automated message. Please do not reply.",
+    "html": ""
   }
 }

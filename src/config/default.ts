@@ -59,6 +59,7 @@ export interface AppConfig {
     };
     NETWORK_TIMEOUT: number;
     monitorTaskCron: string;
+    weeklyReportCron: string;
     email: {
         host?: string;
         port?: string;
@@ -104,6 +105,7 @@ const config: AppConfig = {
         password: process.env.QITMEER_PASSWORD ?? '',
     },
     monitorTaskCron: process.env.MONITOR_TASK_CRON || "*/15 * * * *",
+    weeklyReportCron: process.env.WEEKLY_REPORT_CRON || '0 9 * * 1',
     email: {
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,

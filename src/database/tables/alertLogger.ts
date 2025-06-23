@@ -2,6 +2,8 @@ import crypto from 'crypto';
 import {getRecord, initTable, insertRecord, mainDb} from '../../utils/db/dbUtils';
 import {createQueryFunction} from '../../utils/db/queryServiceTemplate';
 
+const TABLE_NAME = 'alerts';
+
 export interface AlertLog {
     id: number;
     type: string;
@@ -11,7 +13,7 @@ export interface AlertLog {
 }
 
 const initTableSQL = `
-    CREATE TABLE IF NOT EXISTS alerts
+    CREATE TABLE IF NOT EXISTS ${TABLE_NAME}
     (
         id         INTEGER PRIMARY KEY AUTOINCREMENT,
         type       TEXT NOT NULL,
@@ -21,9 +23,9 @@ const initTableSQL = `
     );
 `;
 
-initTable(mainDb, 'alerts', initTableSQL);
+initTable(mainDb, TABLE_NAME, initTableSQL);
 
-export const queryAlerts = createQueryFunction<AlertLog>('alerts', ['type', 'hash']);
+export const queryAlerts = createQueryFunction<AlertLog>(TABLE_NAME, ['type', 'hash']);
 
 /**
  * Generate SHA256 hash of alert type + JSON payload
@@ -47,7 +49,7 @@ export function getContentHash(type: string, payload: any): string {
 export function getLastAlert(type: string): Promise<AlertLog | null> {
     const querySQL = `
         SELECT *
-        FROM alerts
+        FROM ${TABLE_NAME}
         WHERE type = ?
         ORDER BY created_at DESC
         LIMIT 1
@@ -60,10 +62,10 @@ export function getLastAlert(type: string): Promise<AlertLog | null> {
  */
 export function insertAlert(type: string, hash: string, payload: any): Promise<number> {
     const insertSQL = `
-        INSERT INTO alerts (type, hash, payload)
+        INSERT INTO ${TABLE_NAME} (type, hash, payload)
         VALUES (?, ?, ?)
     `;
-    return insertRecord(mainDb, 'alerts', insertSQL, [type, hash, JSON.stringify(payload)]);
+    return insertRecord(mainDb, TABLE_NAME, insertSQL, [type, hash, JSON.stringify(payload)]);
 }
 
 /**

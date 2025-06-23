@@ -1,6 +1,7 @@
 import {getCount, getRecord, initTable, insertRecord, mainDb} from '../../utils/db/dbUtils';
 import {createQueryFunction} from '../../utils/db/queryServiceTemplate';
-import {ConnectionLog} from "./connectionLogger";
+
+const TABLE_NAME = 'node_meta_log';
 
 export interface NodeMetaLog {
     id: number;
@@ -13,16 +14,15 @@ export interface NodeMetaLog {
 }
 
 export interface InsertNodeMetaInput {
-    ID: string;
+    node_id: string;
     buildversion: string;
     version: number;
     protocolversion: number;
     network: string;
 }
 
-
 const initTableSQL = `
-    CREATE TABLE IF NOT EXISTS node_meta_log
+    CREATE TABLE IF NOT EXISTS ${TABLE_NAME}
     (
         id              INTEGER PRIMARY KEY AUTOINCREMENT,
         node_id         TEXT,
@@ -34,13 +34,12 @@ const initTableSQL = `
     );
 `;
 
-initTable(mainDb, 'node_meta_log', initTableSQL);
-
+initTable(mainDb, TABLE_NAME, initTableSQL);
 
 export async function insertNodeMeta(info: InsertNodeMetaInput): Promise<number> {
     const checkSql = `
         SELECT COUNT(*) as count
-        FROM node_meta_log
+        FROM ${TABLE_NAME}
         WHERE buildversion = ?
           AND version = ?
     `;
@@ -48,25 +47,24 @@ export async function insertNodeMeta(info: InsertNodeMetaInput): Promise<number>
     if (count > 0) return 0;
 
     const insertSql = `
-        INSERT INTO node_meta_log (node_id, buildversion, version, protocolversion, network)
+        INSERT INTO ${TABLE_NAME} (node_id, buildversion, version, protocolversion, network)
         VALUES (?, ?, ?, ?, ?)
     `;
     const params = [
-        info.ID,
+        info.node_id,
         info.buildversion,
         info.version,
         info.protocolversion,
         info.network,
     ];
 
-    return insertRecord(mainDb, 'node_meta_log', insertSql, params);
+    return insertRecord(mainDb, TABLE_NAME, insertSql, params);
 }
-
 
 export async function getNodeMeta(): Promise<NodeMetaLog | null> {
     const sql = `
         SELECT *
-        FROM node_meta_log
+        FROM ${TABLE_NAME}
         ORDER BY created_at DESC
         LIMIT 1
     `;
@@ -79,5 +77,7 @@ export async function getNodeMeta(): Promise<NodeMetaLog | null> {
     }
 }
 
-export const queryNodeMeta = createQueryFunction
-    <NodeMetaLog> ('node_meta_log',['node_id',  'version', 'network']);
+export const queryNodeMeta = createQueryFunction<NodeMetaLog>(
+    TABLE_NAME,
+    ['node_id', 'version', 'network']
+);

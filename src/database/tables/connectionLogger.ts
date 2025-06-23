@@ -1,6 +1,8 @@
 import { mainDb, initTable, insertRecord } from '../../utils/db/dbUtils';
 import { createQueryFunction } from '../../utils/db/queryServiceTemplate';
 
+const TABLE_NAME = 'connection_log';
+
 export interface ConnectionLog {
     id: number;
     node_id: string;
@@ -9,34 +11,35 @@ export interface ConnectionLog {
 }
 
 export interface InsertConnectionLogInput {
-    ID?: string;
+    node_id?: string;
     connections?: number;
 }
 
 const initTableSQL = `
-  CREATE TABLE IF NOT EXISTS connection_log (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    node_id     TEXT,
-    connections INTEGER NOT NULL,
-    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
+    CREATE TABLE IF NOT EXISTS ${TABLE_NAME}
+    (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        node_id     TEXT,
+        connections INTEGER NOT NULL,
+        created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 `;
 
-initTable(mainDb, 'connection_log', initTableSQL);
+initTable(mainDb, TABLE_NAME, initTableSQL);
 
-export const queryConnectionLogs = createQueryFunction<ConnectionLog>('connection_log', [
+export const queryConnectionLogs = createQueryFunction<ConnectionLog>(TABLE_NAME, [
     'node_id',
     'connections'
 ]);
 
 export function insertConnectionLog(nodeInfo: InsertConnectionLogInput): Promise<number> {
     const sql = `
-    INSERT INTO connection_log (node_id, connections)
-    VALUES (?, ?)
-  `;
+        INSERT INTO ${TABLE_NAME} (node_id, connections)
+        VALUES (?, ?)
+    `;
     const params = [
-        nodeInfo.ID || null,
-        nodeInfo.connections || 0
+        nodeInfo.node_id ?? null,
+        nodeInfo.connections ?? 0
     ];
-    return insertRecord(mainDb, 'connection_log', sql, params);
+    return insertRecord(mainDb, TABLE_NAME, sql, params);
 }

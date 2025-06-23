@@ -1,5 +1,7 @@
-import { mainDb, initTable, insertRecord, getRecord } from '../../utils/db/dbUtils';
-import { createQueryFunction } from '../../utils/db/queryServiceTemplate';
+import {getRecord, initTable, insertRecord, mainDb} from '../../utils/db/dbUtils';
+import {createQueryFunction} from '../../utils/db/queryServiceTemplate';
+
+const TABLE_NAME = 'monitor_logs';
 
 export interface MonitorLog {
     id: number;
@@ -10,7 +12,7 @@ export interface MonitorLog {
 }
 
 const initTableSQL = `
-    CREATE TABLE IF NOT EXISTS monitor_logs
+    CREATE TABLE IF NOT EXISTS ${TABLE_NAME}
     (
         id         INTEGER PRIMARY KEY AUTOINCREMENT,
         status     TEXT NOT NULL,
@@ -20,30 +22,30 @@ const initTableSQL = `
     );
 `;
 
-initTable(mainDb, 'monitor_logs', initTableSQL);
+initTable(mainDb, TABLE_NAME, initTableSQL);
 
-export const queryMonitorLogs = createQueryFunction<MonitorLog>('monitor_logs', ['status', 'type']);
+export const queryMonitorLogs =
+    createQueryFunction<MonitorLog>(TABLE_NAME, ['status', 'type']);
 
 export function insertMonitorLog(
     status: string,
     type: string,
-    payload: any
+    payload: Record<string, any>
 ): Promise<number> {
     const insertSQL = `
-    INSERT INTO monitor_logs (status, type, detail)
-    VALUES (?, ?, ?)
-  `;
-    return insertRecord(mainDb, 'monitor_logs', insertSQL, [status, type, JSON.stringify(payload)]);
+        INSERT INTO ${TABLE_NAME} (status, type, detail)
+        VALUES (?, ?, ?)
+    `;
+    return insertRecord(mainDb, TABLE_NAME, insertSQL, [status, type, JSON.stringify(payload)]);
 }
 
 export async function getMonitorLogsByStatus(status?: string): Promise<MonitorLog | null> {
     let sql = `
-    SELECT *
-    FROM monitor_logs
-    WHERE 1 = 1
-  `;
-
-    const params: any[] = [];
+        SELECT *
+        FROM ${TABLE_NAME}
+        WHERE 1 = 1
+    `;
+    const params: unknown[] = [];
 
     if (status) {
         sql += ` AND status = ?`;
